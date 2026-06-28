@@ -1,0 +1,7 @@
+# Tools for validating and converting the Sigma rules locally and in CI.
+# Install into a virtual environment:  python -m venv .venv && .venv\Scripts\activate && pip install -r requirements.txt
+
+sigma-cli==3.0.2                  # command-line front-end (sigma check / sigma convert)
+pysigma-backend-splunk==2.1.0     # converts rules to Splunk SPL
+pysigma-pipeline-sysmon==2.0.0    # maps generic log sources to Sysmon events (rules 1 & 2)
+pysigma-pipeline-windows==2.0.0   # maps generic log sources to Windows audit logs (rule 3)
