@@ -1,0 +1,31 @@
+title: LSASS Memory Access with Read Rights
+id: 4c9d9281-d259-4394-a321-580eae25ba94
+status: experimental
+description: Detects a process opening a handle to lsass.exe with access rights that allow
+    reading its memory, a core behavior of OS credential dumping tools such as Mimikatz.
+references:
+    - https://attack.mitre.org/techniques/T1003/001/
+author: Yusuf Kuzey
+date: 2026-06-28
+tags:
+    - attack.credential_access
+    - attack.t1003
+    - attack.t1003.001
+logsource:
+    product: windows
+    category: process_access
+detection:
+    selection:
+        TargetImage|endswith: '\lsass.exe'
+        GrantedAccess:
+            - '0x1010'
+            - '0x1410'
+            - '0x143a'
+            - '0x1438'
+            - '0x1fffff'
+    condition: selection
+falsepositives:
+    - Antivirus and EDR products, which routinely inspect process memory (including LSASS)
+      as part of threat scanning.
+    - Some backup, monitoring, or system-management tools that read process memory.
+level: critical
