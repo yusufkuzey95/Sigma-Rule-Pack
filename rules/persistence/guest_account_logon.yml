@@ -10,9 +10,7 @@ author: Yusuf Kuzey
 date: 2026-06-28
 tags:
     - attack.persistence
-    - attack.privilege_escalation
-    - attack.initial_access
-    - attack.defense_evasion
+    - attack.initial-access
     - attack.t1078
     - attack.t1078.001
 logsource:

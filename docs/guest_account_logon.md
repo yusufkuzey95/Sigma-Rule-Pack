@@ -1,7 +1,7 @@
 # Detection note: Successful Logon Using the Built-in Guest Account
 
 - **Rule file:** [`rules/persistence/guest_account_logon.yml`](../rules/persistence/guest_account_logon.yml)
-- **ATT&CK:** [T1078.001 — Valid Accounts: Default Accounts](https://attack.mitre.org/techniques/T1078/001/) (Tactics: Initial Access, Persistence, Privilege Escalation, Defense Evasion)
+- **ATT&CK:** [T1078.001 — Valid Accounts: Default Accounts](https://attack.mitre.org/techniques/T1078/001/) (Tactics tagged: Persistence, Initial Access. T1078 as a technique also spans Privilege Escalation and Defense Evasion, but this specific Guest-logon detection is scoped to the two tactics it actually serves.)
 - **Severity:** high · **Status:** experimental
 
 ## What it detects
