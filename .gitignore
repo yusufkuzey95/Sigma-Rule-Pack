@@ -1,0 +1,16 @@
+# Python (pySigma is a Python tool, we'll use a virtual env later)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Editor / OS junk
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# pySigma / conversion output we don't want to commit
+*.converted
