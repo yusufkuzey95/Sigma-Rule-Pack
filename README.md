@@ -4,13 +4,13 @@ A detection-as-code project I'm building to learn detection engineering: a set o
 
 Built as a learning project to demonstrate practical detection-engineering workflows.
 
-> 🚧 Early work in progress. I'm building this in phases and committing as I go, so this README grows as the project does. Right now the repo structure is in place and the rules are next.
+> 🚧 Work in progress. I'm building this in phases and committing as I go, so this README grows as the project does. The three rules are written and documented; validation and the test lab are next.
 
 ## Status
 
 - [x] M0 — Foundations & repo structure
-- [ ] M1 — Hand-write the three Sigma rules
-- [ ] M2 — False-positive notes for each rule
+- [x] M1 — Hand-write the three Sigma rules
+- [x] M2 — False-positive notes for each rule
 - [ ] M3 — Validate rules locally with pySigma
 - [ ] M4 — Sysmon + Atomic Red Team test lab
 - [ ] M5 — GitHub Actions CI (lint + test)
