@@ -1,0 +1,29 @@
+title: Successful Logon Using the Built-in Guest Account
+id: 34b12dae-8998-4fc4-aba1-d2b6983ea9f8
+status: experimental
+description: Detects a successful logon using the built-in Guest account. Guest is disabled
+    by default and should never log on, so any success is abnormal and may indicate misuse
+    of a valid-but-dormant account (T1078).
+references:
+    - https://attack.mitre.org/techniques/T1078/001/
+author: Yusuf Kuzey
+date: 2026-06-28
+tags:
+    - attack.persistence
+    - attack.privilege_escalation
+    - attack.initial_access
+    - attack.defense_evasion
+    - attack.t1078
+    - attack.t1078.001
+logsource:
+    product: windows
+    service: security
+detection:
+    selection:
+        EventID: 4624
+        TargetUserName: 'Guest'
+    condition: selection
+falsepositives:
+    - IT staff deliberately testing or auditing the Guest account.
+    - Lab, kiosk, training, or test environments that intentionally enable Guest logons.
+level: high
