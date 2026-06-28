@@ -1,0 +1,27 @@
+title: PowerShell Encoded Command Execution
+id: d7984623-be76-461f-a7d7-decb8769d2e5
+status: experimental
+description: Detects PowerShell executed with an encoded command (-enc / -EncodedCommand),
+    a common technique used to obfuscate malicious commands so they are harder to read
+    and detect.
+references:
+    - https://attack.mitre.org/techniques/T1059/001/
+author: Yusuf Kuzey
+date: 2026-06-28
+tags:
+    - attack.execution
+    - attack.t1059.001
+logsource:
+    product: windows
+    category: process_creation
+detection:
+    selection:
+        Image|endswith: '\powershell.exe'
+        CommandLine|contains: '-enc'
+    condition: selection
+falsepositives:
+    - Enterprise management and RMM tools (e.g. SCCM, Microsoft Intune, monitoring agents)
+      that launch PowerShell with encoded commands as part of normal automation.
+    - Software installers that wrap PowerShell steps in encoded commands.
+    - Scheduled tasks or admin automation scripts written in-house that use -EncodedCommand.
+level: medium
