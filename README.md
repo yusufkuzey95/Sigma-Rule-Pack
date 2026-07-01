@@ -99,3 +99,7 @@ The public-sample test is reproducible: [`tests/run_public_sample_tests.ps1`](te
 
 A full Sysmon-instrumented VM running the complete Atomic Red Team suite is a planned
 extension (see the roadmap) — the tests above validate each rule's specific target events.
+
+## License
+
+Released under the MIT License — see [LICENSE](LICENSE).
