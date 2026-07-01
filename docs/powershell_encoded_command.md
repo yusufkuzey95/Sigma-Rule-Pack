@@ -43,7 +43,7 @@ generate encoded commands programmatically:
 
 Parent process and user are supporting context; the decoded command is the decisive clue.
 
-### Tuning ideas (once we baseline the environment)
+### Tuning ideas
 
 - Exclude known-good parents (e.g. the SCCM/Intune agent paths) with a `filter` and
   `condition: selection and not filter`.
@@ -57,4 +57,4 @@ PowerShell accepts **abbreviated** flags: `-e`, `-en`, `-enco`, etc. all work th
 `powershell -e <base64>` would **slip past it** — a false negative. A more robust version
 would also match the shorter abbreviations (e.g. `-e`/`-en`), while being careful that
 short strings like `-e` don't introduce new false positives (they appear in many benign
-flags). This is a planned improvement during the tuning/testing phase.
+flags).

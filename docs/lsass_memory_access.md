@@ -41,7 +41,7 @@ The decisive field is **`SourceImage`** — the process doing the accessing:
 So the question is not "automated vs. human" (LSASS access is always program-driven) but
 "is `SourceImage` a legitimate security tool, or a process that should never touch LSASS?"
 
-### Tuning ideas (once we baseline the environment)
+### Tuning ideas
 
 - Exclude the specific AV/EDR `SourceImage` paths in use with a `filter` and
   `condition: selection and not filter`.

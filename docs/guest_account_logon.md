@@ -11,12 +11,10 @@ Fires on **any authentication involving the built-in Guest account** — a succe
 `TargetUserName` is `Guest`. This rule reads the **Windows Security log**, not Sysmon —
 authentication events come from Windows auditing.
 
-> **Design note:** the rule originally targeted only successful logons (4624). During
-> testing I found that modern Windows blocks the Guest account from interactive logon by
-> default (it lacks the logon right), so a real *successful* Guest logon is hard to produce
-> — but the *attempt* still generates a 4625. Catching both success and failure is actually
-> a stronger detection: it also flags an attacker **probing** the dormant Guest account,
-> which is often the earlier warning sign.
+> **Why both 4624 and 4625:** modern Windows denies the Guest account interactive logon by
+> default (it lacks the logon right), so a *successful* Guest logon is rare — but an attempt
+> still generates a 4625. Matching both success and failure also flags an attacker
+> **probing** the dormant Guest account, often the earlier signal.
 
 ## Why it matters
 
@@ -68,6 +66,5 @@ Windows denies Guest interactive logon by default.
   detection (impossible travel, unusual hours, new-location logins), which requires a
   baseline of each user's normal behavior (UEBA) or correlation rules — beyond a single
   static Sigma rule.
-- Future related rules to consider: interactive logons by service accounts, and
-  password-spray detection (many 4625 failures across accounts), which needs
-  counting/aggregation.
+- Related detections this rule does not cover: interactive logons by service accounts, and
+  password-spray detection (many 4625 failures across accounts, which needs aggregation).
