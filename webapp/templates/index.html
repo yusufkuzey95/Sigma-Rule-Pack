@@ -10,7 +10,7 @@
     <header class="topbar">
         <div class="wrap">
             <h1>Sigma Rule Pack</h1>
-            <p class="tagline">Detection-as-code &middot; MITRE ATT&amp;CK-mapped Sigma rules, validated and tested against real attack telemetry</p>
+            <p class="tagline">MITRE ATT&amp;CK-mapped Sigma detection rules</p>
             <div class="stats">
                 <div class="stat"><span class="num">{{ summary.rules }}</span><span class="lbl">detection rules</span></div>
                 <div class="stat"><span class="num">{{ summary.tactics }}</span><span class="lbl">ATT&amp;CK tactics</span></div>
@@ -47,7 +47,7 @@
                     </p>
                 </div>
                 <div class="col">
-                    <h3>Converted to Splunk <span class="sub">(via pySigma)</span></h3>
+                    <h3>Splunk query</h3>
                     <pre class="code splunk">{{ rule.splunk }}</pre>
 
                     {% if rule.test %}
@@ -68,9 +68,5 @@
         </section>
         {% endfor %}
     </main>
-
-    <footer class="wrap">
-        <p>Generated from the rule files in <code>rules/</code> using the same pySigma engine as the CLI. See <code>docs/testing.md</code> for the full test write-up.</p>
-    </footer>
 </body>
 </html>
