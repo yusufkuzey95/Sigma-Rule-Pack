@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sigma Rule Pack - Detection Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="topbar">
+        <div class="wrap">
+            <h1>Sigma Rule Pack</h1>
+            <p class="tagline">Detection-as-code &middot; MITRE ATT&amp;CK-mapped Sigma rules, validated and tested against real attack telemetry</p>
+            <div class="stats">
+                <div class="stat"><span class="num">{{ summary.rules }}</span><span class="lbl">detection rules</span></div>
+                <div class="stat"><span class="num">{{ summary.tactics }}</span><span class="lbl">ATT&amp;CK tactics</span></div>
+                <div class="stat"><span class="num">{{ summary.tested }}/{{ summary.rules }}</span><span class="lbl">tested on real telemetry</span></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="wrap">
+        {% for rule in rules %}
+        <section class="card">
+            <div class="card-head">
+                <h2>{{ rule.title }}</h2>
+                <div class="badges">
+                    <span class="badge level-{{ rule.level }}">{{ rule.level }}</span>
+                    {% if rule.status %}<span class="badge status">{{ rule.status }}</span>{% endif %}
+                    {% if rule.test %}<span class="badge test-{{ rule.test.status }}">&#10003; {{ rule.test.label }}</span>{% endif %}
+                </div>
+            </div>
+
+            <div class="attack">
+                {% for t in rule.tactics %}<span class="tag tactic">{{ t }}</span>{% endfor %}
+                {% for tech in rule.techniques %}<a class="tag technique" href="{{ tech.url }}" target="_blank" rel="noopener">{{ tech.id }}</a>{% endfor %}
+            </div>
+
+            <p class="desc">{{ rule.description }}</p>
+
+            <div class="grid">
+                <div class="col">
+                    <h3>Detection logic</h3>
+                    <pre class="code">{{ rule.detection_yaml }}</pre>
+                    <p class="src">log source:
+                        {% for k, v in rule.logsource.items() %}<code>{{ k }}={{ v }}</code>{% endfor %}
+                    </p>
+                </div>
+                <div class="col">
+                    <h3>Converted to Splunk <span class="sub">(via pySigma)</span></h3>
+                    <pre class="code splunk">{{ rule.splunk }}</pre>
+
+                    {% if rule.test %}
+                    <h3>Test result</h3>
+                    <p class="test-detail">{{ rule.test.detail }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if rule.falsepositives %}
+            <div class="fp">
+                <h3>Known false positives</h3>
+                <ul>
+                    {% for fp in rule.falsepositives %}<li>{{ fp }}</li>{% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </section>
+        {% endfor %}
+    </main>
+
+    <footer class="wrap">
+        <p>Generated from the rule files in <code>rules/</code> using the same pySigma engine as the CLI. See <code>docs/testing.md</code> for the full test write-up.</p>
+    </footer>
+</body>
+</html>

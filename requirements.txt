@@ -5,3 +5,7 @@ sigma-cli==3.0.2                  # command-line front-end (sigma check / sigma 
 pysigma-backend-splunk==2.1.0     # converts rules to Splunk SPL
 pysigma-pipeline-sysmon==2.0.0    # maps generic log sources to Sysmon events (rules 1 & 2)
 pysigma-pipeline-windows==2.0.0   # maps generic log sources to Windows audit logs (rule 3)
+
+# Web dashboard (webapp/app.py)
+flask==3.1.3                      # serves the local detection dashboard
+PyYAML==6.0.3                     # parse rule YAML for display

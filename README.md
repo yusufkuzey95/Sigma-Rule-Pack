@@ -2,22 +2,29 @@
 
 [![Validate Sigma rules](https://github.com/yusufkuzey95/Sigma-Rule-Pack/actions/workflows/validate.yml/badge.svg)](https://github.com/yusufkuzey95/Sigma-Rule-Pack/actions/workflows/validate.yml)
 
-A detection-as-code project I'm building to learn detection engineering: a set of hand-written Sigma detection rules mapped to MITRE ATT&CK techniques, each documented with its likely false positives, and eventually a CI pipeline that lints and tests the rules automatically.
+A detection-as-code project: a set of hand-written Sigma detection rules mapped to MITRE ATT&CK, each documented with its likely false positives, validated with pySigma, tested against real attack telemetry, and linted automatically in CI on every push.
 
-Built as a learning project to demonstrate practical detection-engineering workflows.
-
-> 🚧 Work in progress. I'm building this in phases and committing as I go, so this README grows as the project does. All three rules are written, documented, validated, and tested against real attack telemetry; CI and polish are next.
+Built as a learning project to demonstrate practical detection-engineering workflows — every rule was written and reasoned through by hand so I can explain each line.
 
 ## Status
 
-- [x] M0 — Foundations & repo structure
-- [x] M1 — Hand-write the three Sigma rules
-- [x] M2 — False-positive notes for each rule
-- [x] M3 — Validate rules locally with pySigma
-- [x] M4 — Test rules against real attack telemetry (Chainsaw + EVTX samples + locally generated Sysmon/Security logs)
-- [ ] M5 — GitHub Actions CI (lint on every push)
-- [ ] M6 — Polish (coverage table, example output, docs)
-- [ ] Stretch — full Sysmon-instrumented VM with live Atomic Red Team emulation
+✅ **Complete.** Three rules across three ATT&CK tactics — written, documented, validated, and tested against real telemetry, with CI enforcing rule quality on every push.
+
+- [x] Hand-written Sigma rules for T1059.001, T1003, T1078
+- [x] False-positive / analyst notes for each rule
+- [x] Validated + converted to SIEM queries with pySigma
+- [x] Tested against real attack telemetry with Chainsaw
+- [x] GitHub Actions CI (lints rules on every push)
+- [ ] *Planned enhancement:* full Sysmon-instrumented VM with live Atomic Red Team emulation
+
+## What's inside
+
+- **Three detections that catch real attacker behavior** — encoded PowerShell, LSASS credential dumping, and misuse of the built-in Guest account.
+- **Every rule mapped to MITRE ATT&CK** by technique ID, so the coverage is explicit and auditable.
+- **A false-positive note per rule** — what benign activity could trip it, how an analyst tells real from noise, and the rule's known blind spots.
+- **Proof they work** — each rule was run against real Windows event logs and shown to fire on the behavior it targets (including a deliberately documented miss).
+- **A web dashboard** to browse the rules, their SIEM queries, and test results ([see below](#web-demo)).
+- **CI** that lints every rule on every push, so a broken rule never ships.
 
 ## ATT&CK coverage
 
@@ -40,8 +47,9 @@ rules/                  Sigma rules, grouped by ATT&CK tactic
   persistence/            guest_account_logon.yml             (T1078)
 docs/                   per-rule detection + false-positive notes, plus testing.md
 tests/                  reproducible test script (rules vs. real attack samples)
+webapp/                 Flask dashboard to browse the rule pack
 requirements.txt        pinned pySigma tooling for validation
-.github/workflows/      CI pipeline (added in M5)
+.github/workflows/      CI pipeline (lints rules on every push)
 ```
 
 ## Background
@@ -52,7 +60,7 @@ A few terms this project is built on, in case anyone reading isn't deep in secur
 
 **MITRE ATT&CK** is a public catalog of attacker behavior. A *tactic* is the attacker's goal (e.g. Execution), a *technique* is the method (T1059, Command and Scripting Interpreter), and a sub-technique is a specific flavor (T1059.001, PowerShell). Tagging each rule with its ID makes the pack's coverage obvious at a glance.
 
-**Sysmon** is a free Microsoft tool that adds detailed Windows logging — command lines, parent processes, one process reading another's memory — that default Windows logging doesn't reliably capture. The rules will query the events Sysmon produces; without that telemetry there's nothing to detect.
+**Sysmon** is a free Microsoft tool that adds detailed Windows logging — command lines, parent processes, one process reading another's memory — that default Windows logging doesn't reliably capture. The rules query the events Sysmon produces; without that telemetry there's nothing to detect.
 
 ## Validating the rules
 
@@ -69,25 +77,17 @@ sigma check rules/
 sigma convert -t splunk -p sysmon rules/execution/powershell_encoded_command.yml
 ```
 
-`sigma check rules/` currently reports **0 errors, 0 issues**. Example of the same rule
-converted to Splunk (the vendor-neutral YAML becomes an actual SIEM search):
+`sigma check rules/` reports **0 errors, 0 issues**. Example of the same rule converted to Splunk (the vendor-neutral YAML becomes an actual SIEM search):
 
 ```
 EventID=1 Image="*\\powershell.exe" CommandLine="*-enc*"
 ```
 
-The `-p sysmon` / `-p splunk_windows` part is a *processing pipeline* — it maps the rule's
-generic log source (e.g. `process_creation`) onto how a specific environment actually stores
-those events (Sysmon `EventID=1`, the Windows Security channel, etc.). This is wired into CI
-in M5 so it runs automatically on every push.
+The `-p sysmon` / `-p splunk_windows` part is a *processing pipeline* — it maps the rule's generic log source (e.g. `process_creation`) onto how a specific environment actually stores those events (Sysmon `EventID=1`, the Windows Security channel, etc.). The same `sigma check` runs in CI on every push.
 
 ## Testing against real telemetry
 
-Linting proves a rule is *well-formed*; testing proves it actually *fires* on the behavior it
-targets. Each rule was run against real Windows event logs with
-[Chainsaw](https://github.com/WithSecureLabs/chainsaw) — some from the public
-[EVTX-ATTACK-SAMPLES](https://github.com/sbousseaden/EVTX-ATTACK-SAMPLES) dataset, some
-generated on a lab host. Full write-up: [`docs/testing.md`](docs/testing.md).
+Linting proves a rule is *well-formed*; testing proves it actually *fires* on the behavior it targets. Each rule was run against real Windows event logs with [Chainsaw](https://github.com/WithSecureLabs/chainsaw) — some from the public [EVTX-ATTACK-SAMPLES](https://github.com/sbousseaden/EVTX-ATTACK-SAMPLES) dataset, some generated on a lab host. Full write-up: [`docs/testing.md`](docs/testing.md).
 
 | Rule | ATT&CK | Telemetry | Result |
 |------|--------|-----------|--------|
@@ -97,8 +97,16 @@ generated on a lab host. Full write-up: [`docs/testing.md`](docs/testing.md).
 
 The public-sample test is reproducible: [`tests/run_public_sample_tests.ps1`](tests/run_public_sample_tests.ps1).
 
-A full Sysmon-instrumented VM running the complete Atomic Red Team suite is a planned
-extension (see the roadmap) — the tests above validate each rule's specific target events.
+A full Sysmon-instrumented VM running the complete Atomic Red Team suite is a planned extension — the tests above validate each rule's specific target events.
+
+## Web demo
+
+A small Flask dashboard presents the rule pack visually — each rule's ATT&CK mapping, severity, detection logic, the pySigma-generated Splunk query, its false-positive notes, and its test result. It's a thin layer over the same rule files and the same pySigma engine the CLI uses.
+
+```
+pip install -r requirements.txt      # includes Flask
+python webapp/app.py                  # then open http://127.0.0.1:5000
+```
 
 ## License
 
