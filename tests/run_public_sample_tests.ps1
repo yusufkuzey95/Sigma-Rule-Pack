@@ -1,13 +1,11 @@
 <#
-    Reproducible test: run the Sigma rules in this repo against real public attack
-    samples (EVTX-ATTACK-SAMPLES) using Chainsaw.
+    Runs the repo's Sigma rules against real public attack samples (EVTX-ATTACK-SAMPLES)
+    with Chainsaw, so you can see the LSASS rule actually fire.
 
-    Usage (from the repo root, on Windows PowerShell):
-        ./tests/run_public_sample_tests.ps1
+    Run from the repo root:  ./tests/run_public_sample_tests.ps1
 
-    It downloads Chainsaw and the sample .evtx files into a temp working dir (nothing is
-    committed to the repo), runs the rules, and prints the detections. See docs/testing.md
-    for the locally-generated tests (T1059.001 and T1078.001), which need a lab host.
+    Grabs Chainsaw + the sample logs into a temp folder (nothing gets committed). The
+    PowerShell and Guest rules were tested on lab-generated logs instead - see docs/testing.md.
 #>
 
 $ErrorActionPreference = "Stop"

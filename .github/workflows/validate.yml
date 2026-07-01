@@ -1,6 +1,6 @@
 name: Validate Sigma rules
 
-# Run on every push and pull request so a broken rule is caught before it ships.
+# lint the rules on every push and PR so a broken one gets caught early
 on:
   push:
   pull_request:

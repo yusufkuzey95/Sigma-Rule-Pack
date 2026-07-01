@@ -1,12 +1,8 @@
 """
-Sigma Rule Pack - web dashboard.
+Small Flask dashboard for the rule pack. Reads the rules in rules/, converts each one to a
+Splunk query with pySigma, and shows it next to its test result.
 
-A thin Flask layer over the same rule files and the same pySigma engine the CLI uses.
-For each rule it shows the ATT&CK mapping, severity, detection logic, the pySigma-generated
-Splunk query, false-positive notes, and the real-telemetry test result (see docs/testing.md).
-
-Run:  python webapp/app.py   ->   http://127.0.0.1:5000
-(Flask's development server - intended for a local demo, not production.)
+Run it:  python webapp/app.py  ->  http://127.0.0.1:5000  (dev server, local use only)
 """
 
 import glob
@@ -35,7 +31,7 @@ TACTIC_NAMES = {
     "lateral-movement": "Lateral Movement",
 }
 
-# Results captured during real-telemetry testing (see docs/testing.md).
+# test results from docs/testing.md
 TEST_RESULTS = {
     "powershell_encoded_command.yml": {
         "status": "pass",
@@ -67,7 +63,7 @@ def technique_url(tid):
 
 
 def pipeline_for(logsource):
-    """Pick the processing pipeline that matches the rule's log source."""
+    # security-log rules need the windows pipeline, sysmon rules need the sysmon one
     if (logsource or {}).get("service") == "security":
         return windows_audit_pipeline
     return sysmon_pipeline
@@ -78,7 +74,7 @@ def convert_to_splunk(path, logsource):
         coll = SigmaCollection.from_yaml(open(path, encoding="utf-8").read())
         backend = SplunkBackend(processing_pipeline=pipeline_for(logsource)())
         return backend.convert(coll)[0]
-    except Exception as exc:  # keep the demo resilient
+    except Exception as exc:  # don't let one broken rule take down the whole page
         return f"(conversion error: {exc})"
 
 
@@ -86,6 +82,7 @@ def load_rules():
     rules = []
     for path in sorted(glob.glob(os.path.join(RULES_DIR, "**", "*.yml"), recursive=True)):
         data = yaml.safe_load(open(path, encoding="utf-8").read())
+        # tags look like attack.execution or attack.t1059.001 - split tactics from techniques
         tactics, techniques = [], []
         for tag in data.get("tags", []):
             name = tag.split(".", 1)[1] if tag.startswith("attack.") else tag
