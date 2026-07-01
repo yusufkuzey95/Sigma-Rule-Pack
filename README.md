@@ -2,7 +2,7 @@
 
 [![Validate Sigma rules](https://github.com/yusufkuzey95/Sigma-Rule-Pack/actions/workflows/validate.yml/badge.svg)](https://github.com/yusufkuzey95/Sigma-Rule-Pack/actions/workflows/validate.yml)
 
-A detection-as-code repo: hand-written Sigma detection rules mapped to MITRE ATT&CK, each with false-positive notes, validated with pySigma, tested against real attack telemetry, and linted in CI on every push. Includes a web dashboard for browsing the rules and their results.
+A detection-as-code repo: Sigma detection rules mapped to MITRE ATT&CK, each with false-positive notes, validated with pySigma, tested against real attack telemetry, and linted in CI on every push. Includes a web dashboard for browsing the rules and their results.
 
 Built as a portfolio project to demonstrate practical detection-engineering workflows.
 
