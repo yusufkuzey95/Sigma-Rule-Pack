@@ -1,5 +1,7 @@
 # Sigma Rule Pack
 
+[![Validate Sigma rules](https://github.com/yusufkuzey95/Sigma-Rule-Pack/actions/workflows/validate.yml/badge.svg)](https://github.com/yusufkuzey95/Sigma-Rule-Pack/actions/workflows/validate.yml)
+
 A detection-as-code project I'm building to learn detection engineering: a set of hand-written Sigma detection rules mapped to MITRE ATT&CK techniques, each documented with its likely false positives, and eventually a CI pipeline that lints and tests the rules automatically.
 
 Built as a learning project to demonstrate practical detection-engineering workflows.
@@ -17,17 +19,17 @@ Built as a learning project to demonstrate practical detection-engineering workf
 - [ ] M6 — Polish (coverage table, example output, docs)
 - [ ] Stretch — full Sysmon-instrumented VM with live Atomic Red Team emulation
 
-## Scope: the rules I'm targeting
+## ATT&CK coverage
 
-| ATT&CK ID  | Technique             | Tactic            | Folder                     |
-|------------|-----------------------|-------------------|----------------------------|
-| T1059.001  | PowerShell            | Execution         | `rules/execution/`         |
-| T1003      | OS Credential Dumping | Credential Access | `rules/credential-access/` |
-| T1078      | Valid Accounts        | Persistence\*     | `rules/persistence/`       |
-
-\* T1078 spans several tactics (Initial Access, Persistence, Privilege Escalation, Defense Evasion). I filed it under persistence for the folder layout, and tagged the rule with the two tactics this specific Guest-logon detection actually serves (Persistence, Initial Access) rather than all four.
+| Tactic | Technique | Sub-technique | Rule | Tested |
+|--------|-----------|---------------|------|--------|
+| Execution | T1059 Command & Scripting Interpreter | T1059.001 PowerShell | [`powershell_encoded_command.yml`](rules/execution/powershell_encoded_command.yml) | ✅ |
+| Credential Access | T1003 OS Credential Dumping | T1003.001 LSASS Memory | [`lsass_memory_access.yml`](rules/credential-access/lsass_memory_access.yml) | ✅ |
+| Persistence / Initial Access | T1078 Valid Accounts | T1078.001 Default Accounts | [`guest_account_logon.yml`](rules/persistence/guest_account_logon.yml) | ✅ |
 
 These are three *different* tactics on purpose. Covering only one tactic would leave me blind to everything else an attacker does — spreading across tactics is the start of a real coverage map.
+
+> On T1078: the technique spans several tactics (Initial Access, Persistence, Privilege Escalation, Defense Evasion). I filed it under `persistence/` for the folder layout and tagged the rule with the two tactics this specific Guest-account detection actually serves.
 
 ## Repo layout
 
