@@ -86,6 +86,8 @@ The public-sample test is reproducible: [`tests/run_public_sample_tests.ps1`](te
 
 A Flask app presents the rule pack visually — each rule's ATT&CK mapping, severity, detection logic, generated Splunk query, false-positive notes, and test result.
 
+![Sigma Rule Pack dashboard](docs/screenshots/SigmaSS01.png)
+
 ```
 pip install -r requirements.txt
 python webapp/app.py                  # then open http://127.0.0.1:5000
