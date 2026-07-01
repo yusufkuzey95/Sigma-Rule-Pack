@@ -1,9 +1,10 @@
-title: Successful Logon Using the Built-in Guest Account
+title: Authentication Activity Involving the Built-in Guest Account
 id: 34b12dae-8998-4fc4-aba1-d2b6983ea9f8
 status: experimental
-description: Detects a successful logon using the built-in Guest account. Guest is disabled
-    by default and should never log on, so any success is abnormal and may indicate misuse
-    of a valid-but-dormant account (T1078).
+description: Detects successful or failed authentication involving the built-in Guest
+    account (Windows Security Event ID 4624 or 4625). Guest is disabled by default and
+    should never be used, so any logon activity involving it - success or failure - is
+    abnormal and may indicate misuse or probing of a valid-but-dormant account (T1078).
 references:
     - https://attack.mitre.org/techniques/T1078/001/
 author: Yusuf Kuzey
@@ -18,10 +19,14 @@ logsource:
     service: security
 detection:
     selection:
-        EventID: 4624
+        EventID:
+            - 4624
+            - 4625
         TargetUserName: 'Guest'
     condition: selection
 falsepositives:
     - IT staff deliberately testing or auditing the Guest account.
     - Lab, kiosk, training, or test environments that intentionally enable Guest logons.
+    - Automated scanners or misconfigured software repeatedly hitting the Guest account
+      (these would appear as repeated 4625 failures).
 level: high

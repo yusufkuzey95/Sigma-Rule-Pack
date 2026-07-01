@@ -4,7 +4,7 @@ A detection-as-code project I'm building to learn detection engineering: a set o
 
 Built as a learning project to demonstrate practical detection-engineering workflows.
 
-> 🚧 Work in progress. I'm building this in phases and committing as I go, so this README grows as the project does. The three rules are written and documented; validation and the test lab are next.
+> 🚧 Work in progress. I'm building this in phases and committing as I go, so this README grows as the project does. All three rules are written, documented, validated, and tested against real attack telemetry; CI and polish are next.
 
 ## Status
 
@@ -12,9 +12,10 @@ Built as a learning project to demonstrate practical detection-engineering workf
 - [x] M1 — Hand-write the three Sigma rules
 - [x] M2 — False-positive notes for each rule
 - [x] M3 — Validate rules locally with pySigma
-- [ ] M4 — Sysmon + Atomic Red Team test lab
-- [ ] M5 — GitHub Actions CI (lint + test)
+- [x] M4 — Test rules against real attack telemetry (Chainsaw + EVTX samples + locally generated Sysmon/Security logs)
+- [ ] M5 — GitHub Actions CI (lint on every push)
 - [ ] M6 — Polish (coverage table, example output, docs)
+- [ ] Stretch — full Sysmon-instrumented VM with live Atomic Red Team emulation
 
 ## Scope: the rules I'm targeting
 
@@ -35,7 +36,8 @@ rules/                  Sigma rules, grouped by ATT&CK tactic
   execution/              powershell_encoded_command.yml      (T1059.001)
   credential-access/      lsass_memory_access.yml             (T1003)
   persistence/            guest_account_logon.yml             (T1078)
-docs/                   per-rule detection + false-positive notes
+docs/                   per-rule detection + false-positive notes, plus testing.md
+tests/                  reproducible test script (rules vs. real attack samples)
 requirements.txt        pinned pySigma tooling for validation
 .github/workflows/      CI pipeline (added in M5)
 ```
@@ -76,3 +78,22 @@ The `-p sysmon` / `-p splunk_windows` part is a *processing pipeline* — it map
 generic log source (e.g. `process_creation`) onto how a specific environment actually stores
 those events (Sysmon `EventID=1`, the Windows Security channel, etc.). This is wired into CI
 in M5 so it runs automatically on every push.
+
+## Testing against real telemetry
+
+Linting proves a rule is *well-formed*; testing proves it actually *fires* on the behavior it
+targets. Each rule was run against real Windows event logs with
+[Chainsaw](https://github.com/WithSecureLabs/chainsaw) — some from the public
+[EVTX-ATTACK-SAMPLES](https://github.com/sbousseaden/EVTX-ATTACK-SAMPLES) dataset, some
+generated on a lab host. Full write-up: [`docs/testing.md`](docs/testing.md).
+
+| Rule | ATT&CK | Telemetry | Result |
+|------|--------|-----------|--------|
+| PowerShell encoded command | T1059.001 | Locally generated (Sysmon EID 1) | ✅ fired on `-EncodedCommand`; **correctly missed** the abbreviated `-e` form (a documented blind spot) |
+| LSASS memory access | T1003.001 | 3 real public attack samples | ✅ fired on all three |
+| Guest account auth activity | T1078.001 | Locally generated (Security EID 4625) | ✅ fired on a real failed Guest logon |
+
+The public-sample test is reproducible: [`tests/run_public_sample_tests.ps1`](tests/run_public_sample_tests.ps1).
+
+A full Sysmon-instrumented VM running the complete Atomic Red Team suite is a planned
+extension (see the roadmap) — the tests above validate each rule's specific target events.
